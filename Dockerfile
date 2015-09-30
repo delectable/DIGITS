@@ -47,6 +47,9 @@ RUN apt-get install -y libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-de
 
 RUN easy_install pillow
 
+# Add caffe binaries to path
+ENV PATH $PATH:/opt/caffe/.build_release/tools
+
 RUN apt-get install -y software-properties-common
 
 RUN add-apt-repository -y ppa:mc3man/trusty-media && \
@@ -66,12 +69,13 @@ RUN apt-get update && apt-get install -y \
     checkinstall yasm libjpeg-dev libjasper-dev libavcodec-dev libavformat-dev libswscale-dev \
     libdc1394-22-dev libxine-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev \
     libv4l-dev python-dev python-numpy libtbb-dev libqt4-dev libgtk2.0-dev libfaac-dev libmp3lame-dev \
-    libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev x264 v4l-utils qt5-default \
-    libopenblas-dev cython vim
+    libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev x264 v4l-utils qt5-default
 
 RUN pip install -U scikit-image
 
 RUN C_INCLUDE_PATH=/usr/lib/openmpi/include pip install --upgrade tables
+
+RUN apt-get -y install cython
 
 RUN cd /opt && git clone https://github.com/NVIDIA/DIGITS.git digits && cd digits && \ 
     git checkout 85c51f0f2d && pip install -r requirements.txt && \
@@ -82,3 +86,5 @@ RUN cd /opt && git clone https://github.com/NVIDIA/DIGITS.git digits && cd digit
 ADD digits.cfg /opt/digits/digits/digits.cfg
 
 WORKDIR /opt/digits
+
+EXPOSE 8080
