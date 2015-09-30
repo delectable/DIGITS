@@ -47,8 +47,38 @@ RUN apt-get install -y libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-de
 
 RUN easy_install pillow
 
+RUN apt-get install -y software-properties-common
+
+RUN add-apt-repository -y ppa:mc3man/trusty-media && \
+    apt-get update && \
+    apt-get install -y ffmpeg gstreamer0.10-ffmpeg
+
+# Get dependencies
+RUN apt-get update && apt-get install -y \
+    bc cmake curl gcc-4.6 g++-4.6 gcc-4.6-multilib g++-4.6-multilib gfortran \
+    git libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libboost-all-dev \ 
+    libhdf5-serial-dev liblmdb-dev libjpeg62 libfreeimage-dev libatlas-base-dev pkgconf \
+    protobuf-compiler python-dev python-pip python-numpy python-scipy python-dev python-nose \
+    unzip wget python-protobuf protobuf-compiler libgoogle-glog-dev libgoogle-glog0 python-google-apputils \
+    python-gflags hdf5-helpers libhdf5-dev libhdf5-serial-dev libhdf5-7 python-tables-data python-tables \
+    python-tables-lib libleveldb-dev libleveldb1 libsnappy-dev libsnappy1 liblmdb-dev liblmdb0 \
+    libatlas3-base libatlas-dev libatlas-base-dev python-pandas-lib python-pandas python-skimage libyaml-dev \
+    checkinstall yasm libjpeg-dev libjasper-dev libavcodec-dev libavformat-dev libswscale-dev \
+    libdc1394-22-dev libxine-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev \
+    libv4l-dev python-dev python-numpy libtbb-dev libqt4-dev libgtk2.0-dev libfaac-dev libmp3lame-dev \
+    libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev x264 v4l-utils qt5-default \
+    libopenblas-dev cython vim
+
+RUN pip install -U scikit-image
+
+RUN C_INCLUDE_PATH=/usr/lib/openmpi/include pip install --upgrade tables
+
 RUN cd /opt && git clone https://github.com/NVIDIA/DIGITS.git digits && cd digits && \ 
-    pip install -r requirements.txt && \
+    git checkout 85c51f0f2d && pip install -r requirements.txt && \
   git clone --branch caffe-0.12 https://github.com/NVIDIA/caffe.git && \
   cd caffe && cp Makefile.config.example Makefile.config && make -j32 && make pycaffe && \
     apt-get install -y graphviz
+
+ADD digits.cfg /opt/digits/digits/digits.cfg
+
+WORKDIR /opt/digits
